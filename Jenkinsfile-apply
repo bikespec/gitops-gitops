@@ -1,24 +1,24 @@
 pipeline {
   triggers {
-  pollSCM('H/3 * * * *')
+    pollSCM ('H/3 * * * *')
   }
   options {
-  disableConcurrentBuilds()
+    disableConcurrentBuilds()
   }
   agent {
-  node {
-  label 'nodejs'
-   }
+    node {
+      label 'nodejs'
+    }
   }
   stages {
     stage ('Validate configuration resources') {
       steps {
-      sh 'oc apply --dry-run --validate -k config'
+        sh 'oc apply --dry-run --validate -k config'
       }
     }
     stage ('Apply resources') {
       when {
-      branch 'main'
+        branch 'main'
       }
       steps {
         sh 'oc apply -k config'
@@ -26,13 +26,12 @@ pipeline {
       }
     }
     stage ('Verify test user') {
- when {
+      when {
         branch 'main'
       }
-
       steps {
-
-        sh 'oc login -u testuser -p redhat123 --insecure-skip-tls-verify https://kubernetes.default.svc:443'
+        sh 'oc login -u testuser -p redhat123 --insecure-skip-tls-verify \
+https://kubernetes.default.svc:443'
         sh 'oc new-project test-testuser || true'
       }
     }
